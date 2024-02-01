@@ -28,6 +28,7 @@
     "mysql2": "^3.9.1"
   },
   "devDependencies": {
-    "@types/node": "^20.11.13"
+    "@types/node": "^20.11.13",
+    "kysely-codegen": "^0.11.0"
   }
 }
