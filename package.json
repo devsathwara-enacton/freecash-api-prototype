@@ -20,6 +20,7 @@
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "^2.1.0",
     "@gquittet/graceful-server": "^4.0.8",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.1",
     "fastify": "^4.26.0",
     "fastify-healthcheck": "^4.4.0",

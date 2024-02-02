@@ -1,6 +1,5 @@
 import { sql } from "kysely";
 import app from "../app";
-import { db } from "../database/database";
 
 interface CombinedResult {
   // Properties from OfferwallTasks
@@ -43,111 +42,111 @@ export const fetch = async (
   category: number | null
 ) => {
   // Query:
-  //   const result = sql<any[]>`SELECT
-  //   offerwall_tasks.name AS Name,
-  //   offerwall_tasks.description,
-  //   offerwall_tasks.instructions,
-  //   offerwall_tasks.id AS ID,
-  //   offerwall_tasks.network,
-  //   offerwall_tasks.offer_id,
-  //   offerwall_tasks.category_id,
-  //   offerwall_tasks.image,
-  //   offerwall_tasks.url,
-  //   offerwall_tasks.countries,
-  //   offerwall_tasks.platforms,
-  //   offerwall_tasks.status,
-  //   offerwall_tasks.payout,
-  //   offerwall_tasks.is_featured,
-  //   offerwall_tasks.goals_count,
-  //   offerwall_tasks.network_goals,
-  //   offerwall_networks.code,
-  //   offerwall_networks.name,
-  //   offerwall_networks.logo,
-  //   offerwall_categories.id AS category_id,
-  //   offerwall_categories.icon,
-  //   offerwall_categories.name AS category_name,
-  //   offerwall_categories.bg_color,
-  //   offerwall_categories.sort_order
-  // FROM
-  //   offerwall_tasks,
-  //   offerwall_networks,
-  //   offerwall_categories
-  //   WHERE
-  //   offerwall_tasks.category_id=offerwall_categories.id
-  //   AND (${
-  //     countries && typeof countries != undefined
-  //       ? sql`JSON_CONTAINS(offerwall_tasks.countries, JSON_ARRAY(${JSON.parse(
-  //           countries[0]
-  //         )}))`
-  //       : sql`1`
-  //   })
-  //   AND (${
-  //     platform && typeof platform != undefined
-  //       ? sql`JSON_CONTAINS(offerwall_tasks.platforms, JSON_ARRAY(${JSON.parse(
-  //           platform[0]
-  //         )}))`
-  //       : sql`1`
-  //   })
+  const result = sql<any>`SELECT
+    offerwall_tasks.name AS Name,
+    offerwall_tasks.description,
+    offerwall_tasks.instructions,
+    offerwall_tasks.id AS ID,
+    offerwall_tasks.network,
+    offerwall_tasks.offer_id,
+    offerwall_tasks.category_id,
+    offerwall_tasks.image,
+    offerwall_tasks.url,
+    offerwall_tasks.countries,
+    offerwall_tasks.platforms,
+    offerwall_tasks.status,
+    offerwall_tasks.payout,
+    offerwall_tasks.is_featured,
+    offerwall_tasks.goals_count,
+    offerwall_tasks.network_goals,
+    offerwall_networks.code,
+    offerwall_networks.name,
+    offerwall_networks.logo,
+    offerwall_categories.id AS category_id,
+    offerwall_categories.icon,
+    offerwall_categories.name AS category_name,
+    offerwall_categories.bg_color,
+    offerwall_categories.sort_order
+  FROM
+    offerwall_tasks,
+    offerwall_networks,
+    offerwall_categories
+    WHERE
+    offerwall_tasks.category_id=offerwall_categories.id
+    AND  offerwall_tasks.network=offerwall_networks.code
+    AND  offerwall_networks.type='tasks'
+    AND (${network ? sql`offerwall_tasks.network=${network}` : sql`1`})
+    AND (${featured ? sql`offerwall_tasks.is_featured=${featured}` : sql`1`})
+    AND (${category ? sql`offerwall_tasks.category_id=${category}` : sql`1`})
+    AND (${
+      countries && typeof countries != undefined
+        ? sql`JSON_CONTAINS(offerwall_tasks.countries, JSON_ARRAY(${JSON.parse(
+            countries[0]
+          )}))`
+        : sql`1`
+    })
+    AND (${
+      platform && typeof platform != undefined
+        ? sql`JSON_CONTAINS(offerwall_tasks.platforms, JSON_ARRAY(${JSON.parse(
+            platform[0]
+          )}))`
+        : sql`1`
+    })
 
-  // LIMIT ${limit != null ? limit : 20}
-  // OFFSET ${
-  //     pageNumber == 1
-  //       ? 0
-  //       : pageNumber != null
-  //       ? (pageNumber - 1) * (limit != null ? limit : 20)
-  //       : null
-  //   };`.execute(db);
+    ${
+      pageNumber != null
+        ? sql`LIMIT ${limit != null ? limit : 20} OFFSET ${
+            (pageNumber - 1) * (limit != null ? limit : 20)
+          }`
+        : sql``
+    };`.execute(app.db);
 
-  //   return result;
+  return result;
 
   // Error with kysely fucntions
-  const query = db
-    .selectFrom("offerwall_tasks")
-    .innerJoin(
-      "offerwall_networks",
-      "offerwall_tasks.network",
-      "offerwall_networks.id"
-    )
-    .innerJoin(
-      "offerwall_categories",
-      "offerwall_tasks.category_id",
-      "offerwall_categories.id"
-    )
-    .select([
-      "offerwall_tasks.name as Name",
-      "offerwall_tasks.description",
-      "offerwall_tasks.instructions",
-      "offerwall_tasks.id as ID",
-      "offerwall_tasks.network",
-      "offerwall_tasks.offer_id",
-      "offerwall_tasks.category_id",
-      "offerwall_tasks.image",
-      "offerwall_tasks.url",
-      "offerwall_tasks.countries",
-      "offerwall_tasks.platforms",
-      "offerwall_tasks.status",
-      "offerwall_tasks.payout",
-      "offerwall_tasks.is_featured",
-      "offerwall_tasks.goals_count",
-      "offerwall_tasks.network_goals",
-      "offerwall_networks.code",
-      "offerwall_networks.name",
-      "offerwall_networks.logo",
-      "offerwall_categories.id as category_id",
-      "offerwall_categories.icon",
-      "offerwall_categories.name as category_name",
-      "offerwall_categories.bg_color",
-      "offerwall_categories.sort_order",
-    ])
-    .where(
-      sql`JSON_CONTAINS(offerwall_tasks.countries, JSON_ARRAY(${countries?.join(
-        ", "
-      )}))`,
-      "=",
-      1
-    )
-    .limit(limit ?? 20)
-    .execute();
+  // const query = db
+  //   .selectFrom("offerwall_tasks")
+  //   .innerJoin(
+  //     "offerwall_networks",
+  //     "offerwall_tasks.network",
+  //     "offerwall_networks.id"
+  //   )
+  //   .innerJoin(
+  //     "offerwall_categories",
+  //     "offerwall_tasks.category_id",
+  //     "offerwall_categories.id"
+  //   )
+  //   .select([
+  //     "offerwall_tasks.name as Name",
+  //     "offerwall_tasks.description",
+  //     "offerwall_tasks.instructions",
+  //     "offerwall_tasks.id as ID",
+  //     "offerwall_tasks.network",
+  //     "offerwall_tasks.offer_id",
+  //     "offerwall_tasks.category_id",
+  //     "offerwall_tasks.image",
+  //     "offerwall_tasks.url",
+  //     "offerwall_tasks.countries",
+  //     "offerwall_tasks.platforms",
+  //     "offerwall_tasks.status",
+  //     "offerwall_tasks.payout",
+  //     "offerwall_tasks.is_featured",
+  //     "offerwall_tasks.goals_count",
+  //     "offerwall_tasks.network_goals",
+  //     "offerwall_networks.code",
+  //     "offerwall_networks.name",
+  //     "offerwall_networks.logo",
+  //     "offerwall_categories.id as category_id",
+  //     "offerwall_categories.icon",
+  //     "offerwall_categories.name as category_name",
+  //     "offerwall_categories.bg_color",
+  //     "offerwall_categories.sort_order",
+  //   ])
+  //   .where(
+  //     sql`JSON_CONTAINS(offerwall_tasks.countries, JSON_ARRAY(${countries[0]})}))`
+  //   )
+  //   .limit(limit ?? 20)
+  //   .execute();
 
-  return query;
+  // return query;
 };

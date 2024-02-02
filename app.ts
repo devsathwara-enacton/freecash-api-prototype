@@ -13,11 +13,15 @@ const createApp = (): CustomFastifyInstance => {
   const app = fastify({ logger: true }) as unknown as CustomFastifyInstance;
   app.decorate("db", db);
   app.register(require("fastify-healthcheck"));
-  // app.setErrorHandler((error, request, reply) => {
-  //   console.log(error.toString());
-  //   reply.status(Number(error.statusCode)).send({ error: error });
-  // });
+  app.setErrorHandler((error, request, reply) => {
+    console.log(error.toString());
+    reply.send({ error: error });
+  });
+
   app.register(import("./routes/taskRoutes"), { prefix: "/api/v1/task" });
+  app.register(import("./routes/postbackRoutes"), {
+    prefix: "/api/v1/postback",
+  });
   return app;
 };
 // Create app instance using the helper function

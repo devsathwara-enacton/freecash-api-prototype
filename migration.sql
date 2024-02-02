@@ -1,0 +1,1 @@
+ALTER TABLE `offerwall_networks` ADD INDEX(`code`);

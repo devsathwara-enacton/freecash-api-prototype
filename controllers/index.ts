@@ -1,3 +1,3 @@
 import * as taskController from "./taskController";
-
-export { taskController };
+import * as postbackController from "./postbackController";
+export { taskController, postbackController };
