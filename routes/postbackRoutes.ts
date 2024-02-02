@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { postbackController } from "../controllers";
 const postbackSchema = {
+  tags: ["Postback"],
   querystring: {
     type: "object",
     properties: {

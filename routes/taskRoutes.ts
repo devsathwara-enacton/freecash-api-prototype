@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { taskController } from "../controllers";
 
 const fetchTaskSchema = {
+  tags: ["Offers"],
   querystring: {
     type: "object",
     properties: {
