@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="center" style="display:flex; justify-content: center;  margin: 0;">
+        Thank you
+    </div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        await sleep(5000);
+
+        const url = new URL(window.location.href);
+
+        // Get the value of the 'accessToken' parameter from the URL
+        const accesstoken = url.searchParams.get("accesstoken");
+        const cookies = document.cookie;
+        console.log(cookies);
+
+        console.log({ accesstoken })
+
+        console.log('sending msg to Hello Channel')
+
+        try {
+            Hello.postMessage(accesstoken);
+        } catch (error) {
+            window.location.href = '/dashboard'
+        }
+    })
+</script>
+
+</html>

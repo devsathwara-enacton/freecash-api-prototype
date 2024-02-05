@@ -14,6 +14,7 @@ export const swaggerOptions = {
       { name: "Categories", description: "Categories" },
       { name: "Postback", description: "Postback" },
       { name: "Providers", description: "Providers" },
+      { name: "Authentication", description: "Authentication" },
     ],
   },
 };

@@ -125,6 +125,17 @@ export interface UserOfferwallSales {
   user_id: number;
 }
 
+export interface UserTbl {
+  created_at: Generated<Date | null>;
+  email: string;
+  facebookId: Generated<string | null>;
+  googleId: Generated<string | null>;
+  id: Generated<number>;
+  name: string;
+  password: Generated<string>;
+  updated_at: Generated<Date | null>;
+}
+
 export interface DB {
   offerwall_categories: OfferwallCategories;
   offerwall_networks: OfferwallNetworks;
@@ -132,4 +143,5 @@ export interface DB {
   offerwall_task_goals: OfferwallTaskGoals;
   offerwall_tasks: OfferwallTasks;
   user_offerwall_sales: UserOfferwallSales;
+  user_tbl: UserTbl;
 }

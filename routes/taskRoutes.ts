@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { taskController } from "../controllers";
+import { isAuthenticated } from "../middleware/authMiddleware";
 
 const fetchTaskSchema = {
   tags: ["Offers"],
@@ -84,5 +85,9 @@ const fetchTaskSchema = {
   },
 };
 export default async function (app: FastifyInstance) {
-  app.get("/", { schema: fetchTaskSchema }, taskController.fetch);
+  app.get(
+    "/",
+    { schema: fetchTaskSchema, preHandler: isAuthenticated },
+    taskController.fetch
+  );
 }

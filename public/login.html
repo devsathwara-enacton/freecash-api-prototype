@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        fetch("https://coral-optimal-commonly.ngrok-free.app/api/v1/auth/login", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "email": "devsathwara@yahoo.com",
+                "password": "Devsathwara08@"
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response;
+                } else if (response.status === 302) {
+                    // Handle redirect manually if needed
+                    window.location.href = response.headers.get('Location');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log('Response from API:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+
+</html>

@@ -16,20 +16,30 @@
     "@fastify/one-line-logger": "^1.2.0",
     "@fastify/passport": "^2.4.0",
     "@fastify/rate-limit": "^9.1.0",
+    "@fastify/secure-session": "^7.1.0",
     "@fastify/sensible": "^5.5.0",
+    "@fastify/static": "^7.0.0",
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "^2.1.0",
     "@gquittet/graceful-server": "^4.0.8",
+    "bcrypt": "^5.1.1",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.1",
     "fastify": "^4.26.0",
     "fastify-healthcheck": "^4.4.0",
     "fastify-ip": "^1.0.0",
     "kysely": "^0.27.2",
-    "mysql2": "^3.9.1"
+    "mysql2": "^3.9.1",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.13",
-    "kysely-codegen": "^0.11.0"
+    "@types/passport-facebook": "^3.0.3",
+    "@types/passport-google-oauth20": "^2.0.14",
+    "i": "^0.3.7",
+    "kysely-codegen": "^0.11.0",
+    "npm": "^10.4.0"
   }
 }
