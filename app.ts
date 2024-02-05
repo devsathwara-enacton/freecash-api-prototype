@@ -16,6 +16,8 @@ import "./utils/passport";
 import cors from "@fastify/cors";
 import path from "path";
 import fs from "fs";
+import view from "@fastify/view";
+import ejs from "ejs";
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
   db: Kysely<DB>;
@@ -65,6 +67,13 @@ const createApp = (): CustomFastifyInstance => {
   app.register(import("./routes/categoriesRoutes"), {
     prefix: "/api/v1/offer-categories",
   });
+
+  app.register(view, {
+    engine: {
+      ejs,
+    },
+    templates: path.join(__dirname, "templates"),
+  });
   app.get(
     "/auth/google/callback",
     {
@@ -75,7 +84,7 @@ const createApp = (): CustomFastifyInstance => {
       }),
     },
     (req: FastifyRequest, reply: FastifyReply) => {
-      reply.send("/home");
+      reply.redirect("/success");
     }
   );
   app.get(
@@ -91,14 +100,13 @@ const createApp = (): CustomFastifyInstance => {
     }
   );
   app.get("/success", (req: FastifyRequest, reply: FastifyReply) => {
-    // Assuming you have an HTML file named "index.html" in the "public" directory
-    const htmlFilePath = path.join(__dirname, "public", "success.html");
-
-    // Read the HTML file content
-    const htmlContent = fs.readFileSync(htmlFilePath, "utf-8");
-
-    // Send the HTML content as the response
-    reply.type("text/html").send(htmlContent);
+    // Render the "index.ejs" template
+    const accessToken = req.session.get("accessToken");
+    console.log(accessToken);
+    reply.view("success.ejs", {
+      /* optional template context */
+      accessToken: accessToken,
+    });
   });
   return app;
 };

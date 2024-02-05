@@ -2,6 +2,7 @@ import fastifyPassport from "@fastify/passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { auth } from "../models";
+import { FastifyRequest } from "fastify";
 
 fastifyPassport.use(
   new GoogleStrategy(
@@ -42,10 +43,12 @@ fastifyPassport.use(
 );
 // Serialize user into the session
 // register a serializer that stores the user object's id in the session ...
-fastifyPassport.registerUserSerializer(async (user, request) => {
+fastifyPassport.registerUserSerializer(async (user, req: FastifyRequest) => {
   const { id, displayName, username }: any = user;
 
   const userForSession = { id, displayName, username };
+  let newAccessToken = Math.floor(Math.random() * 10);
+  req.session.set("accessToken", newAccessToken);
   return userForSession;
 });
 

@@ -29,9 +29,14 @@ export const register = async (req: FastifyRequest, reply: FastifyReply) => {
     }
   }
 };
-
+function isMobile(userAgent: any) {
+  const mobileRegex =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  return mobileRegex.test(userAgent);
+}
 export const login = async (req: FastifyRequest, reply: FastifyReply) => {
   const { email, password } = req.body as { email: string; password: string };
+  console.log(req.headers["user-agent"]);
   const userData = await auth.login(email);
   if (!userData) {
     return reply
@@ -46,17 +51,18 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
     } else {
       //Checking session
       let checkSession = req.session.get("accessToken");
-      console.log(checkSession);
       if (checkSession !== undefined) {
-        return reply.status(200).send({
-          success: true,
-        });
+        // return reply.status(200).send({
+        //   success: true,
+        // });
+        return reply.redirect("/success");
       } else {
         let newAccessToken = Math.floor(Math.random() * 10);
         req.session.set("accessToken", newAccessToken);
-        return reply.status(200).send({
-          success: true,
-        });
+        // return reply.status(200).send({
+        //   success: true,
+        // });
+        return reply.redirect("/success");
       }
     }
   }
