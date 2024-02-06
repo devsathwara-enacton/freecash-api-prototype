@@ -84,6 +84,8 @@ const createApp = (): CustomFastifyInstance => {
       }),
     },
     (req: FastifyRequest, reply: FastifyReply) => {
+      let newAccessToken = Math.floor(Math.random() * 10);
+      req.session.set("accessToken", newAccessToken);
       reply.redirect("/success");
     }
   );

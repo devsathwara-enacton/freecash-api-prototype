@@ -62,7 +62,7 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
         // return reply.status(200).send({
         //   success: true,
         // });
-        return reply.redirect("/success");
+        return reply.redirect(`/success`);
       }
     }
   }
