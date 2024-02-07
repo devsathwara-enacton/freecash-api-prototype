@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="center" style="display:flex; justify-content: center;  margin: 0;">
+        Login Successfull
+    </div>
+</body>
+<script>
+    function getCookie(cookieName) {
+        // Split the cookies string into an array of individual cookies
+        var cookies = document.cookie.split(';');
+
+        // Iterate over each cookie to find the one with the specified name
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+
+            // Check if the current cookie starts with the desired name
+            if (cookie.startsWith(cookieName + '=')) {
+                // Extract and return the value of the cookie
+                return cookie.substring(cookieName.length + 1);
+            }
+        }
+
+        // If the cookie is not found, return null
+        return null;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const accessToken = getCookie('accessToken');
+
+
+        console.log('sending msg to Hello Channel')
+
+
+        try {
+            Hello.postMessage(accessToken);
+        } catch (error) {
+            window.location.href = `https://coral-optimal-commonly.ngrok-free.app/`
+        }
+    })
+</script>
+
+</html>

@@ -39,7 +39,7 @@ export const validate = async (req: FastifyRequest, reply: FastifyReply) => {
     ikey: string;
     hash: string;
   };
-  const data: any = {
+  const data = {
     type: type,
     network: network,
     transaction_id: transaction_id,

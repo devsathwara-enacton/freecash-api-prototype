@@ -3,10 +3,23 @@ export const fetchTaskSchema = {
   querystring: {
     type: "object",
     properties: {
-      countries: { type: "string" },
-      page_number: { type: "number" },
-      platform: { type: "string" },
-      featured: { type: "boolean" },
+      countries: {
+        type: "string",
+        description:
+          "Comma separated list of country codes (ISO 3166-1 alpha- 2) to filter tasks by.If not provided, all available tasks will be returned",
+      },
+      page_number: {
+        type: "number",
+        default: 1,
+      },
+      platform: {
+        type: "string",
+        description: "Comma separated list of platforms ('android', 'ios')",
+      },
+      featured: {
+        type: "boolean",
+        default: false,
+      },
       network: { type: "string" },
       category: { type: "number" },
     },

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,12 +13,14 @@
   "dependencies": {
     "@fastify/cookie": "^9.3.1",
     "@fastify/cors": "^9.0.0",
+    "@fastify/flash": "^5.1.0",
     "@fastify/helmet": "^11.1.1",
     "@fastify/one-line-logger": "^1.2.0",
     "@fastify/passport": "^2.4.0",
     "@fastify/rate-limit": "^9.1.0",
     "@fastify/secure-session": "^7.1.0",
     "@fastify/sensible": "^5.5.0",
+    "@fastify/static": "^7.0.0",
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "^2.1.0",
     "@gquittet/graceful-server": "^4.0.8",
@@ -29,9 +32,9 @@
     "fastify-ip": "^1.0.0",
     "kysely": "^0.27.2",
     "mysql2": "^3.9.1",
+    "nodemon": "^3.0.3",
     "passport-facebook": "^3.0.0",
-    "passport-google-oauth20": "^2.0.0",
-    "useragent": "^2.3.0"
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

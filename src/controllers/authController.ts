@@ -51,14 +51,18 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
         // return reply.status(200).send({
         //   success: true,
         // });
-        return reply.send({ accessToken: checkSession });
+        return reply.redirect(
+          "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
+        );
       } else {
         let newAccessToken = Math.floor(Math.random() * 10);
         req.session.set("accessToken", newAccessToken);
         // return reply.status(200).send({
         //   success: true,
         // });
-        return reply.send({ accessToken: newAccessToken });
+        return reply.redirect(
+          "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
+        );
       }
     }
   }

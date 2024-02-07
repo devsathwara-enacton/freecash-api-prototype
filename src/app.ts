@@ -14,7 +14,8 @@ import fastifySecureSession from "@fastify/secure-session";
 import fastifyPassport from "@fastify/passport";
 import "./utils/passport";
 import cors from "@fastify/cors";
-import useragent from "useragent";
+import { config } from "./config/config";
+
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
   db: Kysely<DB>;
@@ -24,6 +25,14 @@ interface CustomFastifyInstance extends FastifyInstance {
 const createApp = (): CustomFastifyInstance => {
   const app = fastify({ logger: true }) as unknown as CustomFastifyInstance;
   app.decorate("db", db);
+  const sessionSecret = config.env.app.sessionSecret?.toString();
+  if (!sessionSecret) {
+    throw new Error("Session secret is not defined in the config");
+  }
+  const sessionSalt = config.env.app.sessionSalt?.toString();
+  if (!sessionSalt) {
+    throw new Error("Session salt is not defined in the config");
+  }
   app.register(require("fastify-healthcheck"));
   app.setErrorHandler(
     (error: Error, request: FastifyRequest, reply: FastifyReply) => {
@@ -34,13 +43,13 @@ const createApp = (): CustomFastifyInstance => {
   app.register(cors);
   app.register(fastifyCookie);
   app.register(fastifySecureSession, {
-    secret: "averylogphrasebiggerthanthirtytwochars",
-    salt: "mq9hDxBVDbspDR6n",
-    sessionName: "session",
-    cookieName: "accessToken",
+    secret: sessionSecret,
+    salt: sessionSalt,
+    sessionName: config.env.app.sessionName,
+    cookieName: config.env.app.cookieName,
     cookie: {
       path: "/",
-      httpOnly: true,
+      httpOnly: false,
       expires: new Date(Date.now() + 3600000),
       sameSite: "none",
       secure: true,
@@ -74,7 +83,10 @@ const createApp = (): CustomFastifyInstance => {
     (req: FastifyRequest, reply: FastifyReply) => {
       let newAccessToken = Math.floor(Math.random() * 10);
       req.session.set("accessToken", newAccessToken);
-      reply.redirect("/success");
+      console.log(newAccessToken);
+      reply.redirect(
+        "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
+      );
     }
   );
   app.get(
@@ -90,26 +102,15 @@ const createApp = (): CustomFastifyInstance => {
       reply.redirect("/success");
     }
   );
-  app.get("/success", (req: FastifyRequest, reply: FastifyReply) => {
-    // Render the "index.ejs" template
-    const accessToken = req.session.get("accessToken");
-    console.log(accessToken);
-    reply.send({
-      /* optional template context */
-      accessToken: accessToken,
-    });
+
+  app.register(require("@fastify/static"), {
+    root: "C:/Practice dev Sathwara/freecash-api/static",
+    prefix: "/public/",
   });
-  app.get(
-    "/api/v1/auth/check-device",
-    (req: FastifyRequest, reply: FastifyReply) => {
-      var agent: useragent.Agent = useragent.parse(req.headers["user-agent"]);
-      var agent2 = useragent.lookup(req.headers["user-agent"]);
-      var ua = useragent.is(req.headers["user-agent"]);
-      console.log(ua, agent);
-    }
-  );
+
   return app;
 };
+
 // Create app instance using the helper function
-const app = createApp();
+const app: CustomFastifyInstance = createApp();
 export default app;
