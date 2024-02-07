@@ -51,14 +51,14 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
         // return reply.status(200).send({
         //   success: true,
         // });
-        return reply.redirect("/success");
+        return reply.send({ accessToken: checkSession });
       } else {
         let newAccessToken = Math.floor(Math.random() * 10);
         req.session.set("accessToken", newAccessToken);
         // return reply.status(200).send({
         //   success: true,
         // });
-        return reply.redirect(`/success`);
+        return reply.send({ accessToken: newAccessToken });
       }
     }
   }

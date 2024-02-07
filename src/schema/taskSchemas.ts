@@ -3,9 +3,9 @@ export const fetchTaskSchema = {
   querystring: {
     type: "object",
     properties: {
-      countries: { type: "array" },
+      countries: { type: "string" },
       page_number: { type: "number" },
-      platform: { type: "array" },
+      platform: { type: "string" },
       featured: { type: "boolean" },
       network: { type: "string" },
       category: { type: "number" },

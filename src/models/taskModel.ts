@@ -42,6 +42,7 @@ export const fetch = async (
   category: number | null
 ) => {
   // Query:
+
   const result = sql<any>`SELECT
     offerwall_tasks.name AS Name,
     offerwall_tasks.description,
@@ -80,16 +81,12 @@ export const fetch = async (
     AND (${category ? sql`offerwall_tasks.category_id=${category}` : sql`1`})
     AND (${
       countries && typeof countries != undefined
-        ? sql`JSON_CONTAINS(offerwall_tasks.countries, JSON_ARRAY(${JSON.parse(
-            countries[0]
-          )}))`
+        ? sql`JSON_CONTAINS(offerwall_tasks.countries, JSON_ARRAY(${countries}))`
         : sql`1`
     })
     AND (${
       platform && typeof platform != undefined
-        ? sql`JSON_CONTAINS(offerwall_tasks.platforms, JSON_ARRAY(${JSON.parse(
-            platform[0]
-          )}))`
+        ? sql`JSON_CONTAINS(offerwall_tasks.platforms, JSON_ARRAY(${platform}))`
         : sql`1`
     })
 

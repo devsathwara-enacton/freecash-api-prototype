@@ -11,10 +11,10 @@ export const fetch = async (req: FastifyRequest, reply: FastifyReply) => {
     network,
     category,
   } = req.query as {
-    countries: string[];
+    countries: string;
     page_number: number;
     limit: number;
-    platform: string[];
+    platform: string;
     featured: boolean;
     network: string;
     category: number;
@@ -28,11 +28,13 @@ export const fetch = async (req: FastifyRequest, reply: FastifyReply) => {
     network,
     category
   );
+  const ArrPlat: string[] | null = platform ? platform.split(",") : null;
+  const ArrCountry: string[] | null = countries ? countries.split(",") : null;
   const result = await task.fetch(
-    typeof countries != undefined || !countries ? countries : null,
+    typeof ArrCountry != undefined || ArrCountry ? ArrCountry : null,
     page_number || null,
     limit != null ? parseInt(limit.toString()) : limit,
-    typeof platform != undefined || !platform ? platform : null,
+    typeof ArrPlat != undefined || ArrPlat ? ArrPlat : null,
     featured != null || featured != undefined ? featured : null,
     network || null,
     category || null

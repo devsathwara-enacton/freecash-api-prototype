@@ -9,7 +9,6 @@ export const insertLog = async (
   status: "pending" | "processed" | "error",
   message: string
 ) => {
-  console.log(JSON.stringify(payload));
   const result = await app.db
     .insertInto("offerwall_postback_logs")
     .values({
