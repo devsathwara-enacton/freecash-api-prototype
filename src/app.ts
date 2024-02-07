@@ -53,6 +53,7 @@ const createApp = (): CustomFastifyInstance => {
       expires: new Date(Date.now() + 3600000),
       sameSite: "none",
       secure: true,
+      domain: ".enactweb.com",
     },
   });
   app.register(fastifyPassport.initialize());

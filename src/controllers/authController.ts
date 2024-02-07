@@ -39,6 +39,11 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
       .status(401)
       .send({ success: false, error: "Invalid Credentials" });
   } else {
+    if (userData.password === null) {
+      return reply
+        .status(401)
+        .send({ success: false, error: "Password is null" });
+    }
     const isValidPassord = await bcrypt.compare(password, userData.password);
     if (!isValidPassord) {
       return reply
@@ -48,21 +53,20 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
       //Checking session
       let checkSession = req.session.get("accessToken");
       if (checkSession !== undefined) {
-        // return reply.status(200).send({
-        //   success: true,
-        // });
-        return reply.redirect(
-          "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
-        );
+        return reply.status(200).send({
+          success: true,
+          accessToken: checkSession,
+        });
       } else {
         let newAccessToken = Math.floor(Math.random() * 10);
         req.session.set("accessToken", newAccessToken);
         // return reply.status(200).send({
         //   success: true,
         // });
-        return reply.redirect(
-          "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
-        );
+        return reply.status(200).send({
+          success: true,
+          accessToken: checkSession,
+        });
       }
     }
   }
