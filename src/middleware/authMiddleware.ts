@@ -5,7 +5,7 @@ export const isAuthenticated = (
   reply: FastifyReply,
   done: () => void
 ) => {
-  const accessToken = req.session.get("accessToken");
+  const accessToken = req.cookies.accessToken;
   console.log("Access Token:", accessToken);
   if (!accessToken) {
     return reply.status(401).send({ error: "Not authenticated" });

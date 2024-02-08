@@ -131,8 +131,9 @@ export interface UserTbl {
   facebookId: Generated<string | null>;
   googleId: Generated<string | null>;
   id: Generated<number>;
+  is_verified: Generated<number | null>;
   name: string;
-  password: Generated<string>;
+  password: Generated<string | null>;
   updated_at: Generated<Date | null>;
 }
 

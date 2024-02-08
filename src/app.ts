@@ -15,6 +15,9 @@ import fastifyPassport from "@fastify/passport";
 import "./utils/passport";
 import cors from "@fastify/cors";
 import { config } from "./config/config";
+import view from "@fastify/view";
+import ejs from "ejs";
+import path from "path";
 
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
@@ -42,6 +45,7 @@ const createApp = (): CustomFastifyInstance => {
   );
   app.register(cors);
   app.register(fastifyCookie);
+
   app.register(fastifySecureSession, {
     secret: sessionSecret,
     salt: sessionSalt,
@@ -53,13 +57,20 @@ const createApp = (): CustomFastifyInstance => {
       expires: new Date(Date.now() + 3600000),
       sameSite: "none",
       secure: true,
-      domain: ".enactweb.com",
+      // domain: ".enactweb.com",
     },
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.register(fastifySwagger, swaggerOptions);
   app.register(fastifySwaggerUi, swaggerUiOptions);
+  app.register(require("@fastify/formbody"));
+  app.register(view, {
+    engine: {
+      ejs,
+    },
+    templates: path.join(__dirname, "templates"),
+  });
 
   app.register(import("./routes/taskRoutes"), { prefix: "/api/v1/task" });
   app.register(import("./routes/authRoutes"), { prefix: "/api/v1/auth" });
@@ -83,7 +94,13 @@ const createApp = (): CustomFastifyInstance => {
     },
     (req: FastifyRequest, reply: FastifyReply) => {
       let newAccessToken = Math.floor(Math.random() * 10);
-      req.session.set("accessToken", newAccessToken);
+      reply.setCookie("accessToken", newAccessToken.toString(), {
+        path: "/",
+        httpOnly: false,
+        expires: new Date(Date.now() + 3600000),
+        sameSite: "none",
+        secure: true,
+      });
       console.log(newAccessToken);
       reply.redirect(
         "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
@@ -99,14 +116,29 @@ const createApp = (): CustomFastifyInstance => {
     },
     function (req: FastifyRequest, reply: FastifyReply) {
       let newAccessToken = Math.floor(Math.random() * 10);
-      req.session.set("accessToken", newAccessToken);
+      reply.setCookie("accessToken", newAccessToken.toString(), {
+        path: "/",
+        httpOnly: false,
+        expires: new Date(Date.now() + 3600000),
+        sameSite: "none",
+        secure: true,
+      });
       reply.redirect("/success");
     }
   );
 
   app.register(require("@fastify/static"), {
-    root: "C:/Practice dev Sathwara/freecash-api/static",
+    root: `${config.env.app.staticFile}/freecash-api/static`,
     prefix: "/public/",
+  });
+  app.get("/success", (req: FastifyRequest, reply: FastifyReply) => {
+    // Render the "index.ejs" template
+    const accessToken = req.session.get("accessToken");
+    console.log(accessToken);
+    reply.view("success.ejs", {
+      /* optional template context */
+      accessToken: accessToken,
+    });
   });
 
   return app;

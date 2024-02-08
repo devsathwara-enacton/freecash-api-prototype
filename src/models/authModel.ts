@@ -1,3 +1,4 @@
+import { UpdateResult } from "kysely";
 import app from "../app";
 import { UserTbl } from "../database/db";
 
@@ -37,4 +38,30 @@ export const login = async (email: string) => {
     .where("email", "=", email)
     .executeTakeFirst();
   return result;
+};
+
+export const updateIsVerified = async (
+  email: string
+): Promise<UpdateResult> => {
+  const userUpdate = await app.db
+    .updateTable("user_tbl")
+    .set({
+      is_verified: 1,
+    })
+    .where("email", "=", `${email}`)
+    .executeTakeFirst();
+  return userUpdate;
+};
+export const updatePassword = async (
+  email: string | undefined,
+  password: string
+) => {
+  const userUpdate = await app.db
+    .updateTable("user_tbl")
+    .set({
+      password: password,
+    })
+    .where("email", "=", `${email}`)
+    .executeTakeFirst();
+  return userUpdate;
 };

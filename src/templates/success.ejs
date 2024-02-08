@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="center" style="display:flex; justify-content: center;  margin: 0;">
+        Thank you <%= accessToken %>
+    </div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        const url = new URL(window.location.href);
+
+        // Get the value of the 'accessToken' parameter from the URL
+        // const accesstoken = url.searchParams.get("accesstoken");
+        const accessToken = '<%= accessToken %>';
+
+        console.log(document.cookie)
+
+        console.log('sending msg to Hello Channel')
+
+        try {
+            Hello.postMessage('<%= accessToken %>');
+        } catch (error) {
+            // window.location.href = "https://composed-relative-skink.ngrok-free.app" 
+        }
+    })
+</script>
+
+</html>
