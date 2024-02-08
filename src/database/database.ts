@@ -8,7 +8,7 @@ const dialect = new MysqlDialect({
     database: config.env.database.name,
     host: config.env.database.host,
     user: config.env.database.user,
-    password: "",
+    password: config.env.database.password,
     port: Number(config.env.database.port),
     connectionLimit: 10,
   }),
