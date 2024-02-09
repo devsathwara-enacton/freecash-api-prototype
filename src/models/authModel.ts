@@ -26,6 +26,7 @@ export const registerSocial = async (
       name: name,
       googleId: googleId,
       facebookId: facebookId,
+      is_verified: 1,
     })
     .execute();
   return result;

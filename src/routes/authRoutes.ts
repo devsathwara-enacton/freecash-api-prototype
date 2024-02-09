@@ -6,14 +6,14 @@ import { isAuthenticated } from "../middleware/authMiddleware";
 
 export default async function (app: FastifyInstance) {
   app.get("/login", (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.view("login.ejs");
+    return reply.view("login.ejs", { message: null, warning: null });
   });
   app.get("/register", (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.view("register.ejs");
+    return reply.view("register.ejs", { message: null, warning: null });
   });
 
   app.get("/forgot-password", (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.view("forgot.ejs");
+    return reply.view("forgot.ejs", { message: null });
   });
   app.get(
     "/google",
@@ -52,20 +52,27 @@ export default async function (app: FastifyInstance) {
       reply.clearCookie("accessToken");
       req.session.delete();
       req.logout();
-      return reply.send("Logout success");
+      return reply.view("login.ejs", {
+        message: "Logout Successfull",
+        warning: null,
+      });
     }
   );
   app.get(
-    "/verify-email",
+    "/verify-email/",
     {
       schema: {
-        params: {
+        querystring: {
           token: { type: "string" },
         },
       },
     },
     authController.verifyEmail
   );
+  app.get("/reset-password/", (req: FastifyRequest, reply: FastifyReply) => {
+    const { token } = req.query as { token: string };
+    return reply.view("resetPassword.ejs", { token: token });
+  });
   app.post(
     "/forgot-password",
     {
@@ -81,7 +88,7 @@ export default async function (app: FastifyInstance) {
     authController.forgotPassword
   );
   app.post(
-    "/reset-password/:token",
+    "/reset-password/",
     {
       schema: {
         body: {

@@ -18,6 +18,7 @@ import { config } from "./config/config";
 import view from "@fastify/view";
 import ejs from "ejs";
 import path from "path";
+import { createJWTToken } from "./utils/jwt";
 
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
@@ -92,19 +93,20 @@ const createApp = (): CustomFastifyInstance => {
         failureRedirect: "/",
       }),
     },
-    (req: FastifyRequest, reply: FastifyReply) => {
-      let newAccessToken = Math.floor(Math.random() * 10);
-      reply.setCookie("accessToken", newAccessToken.toString(), {
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      let accessToken = await createJWTToken(
+        { user: req.user },
+        `${parseInt(config.env.app.expiresIn)}h`
+      );
+      reply.setCookie("accessToken", accessToken.toString(), {
         path: "/",
         httpOnly: false,
         expires: new Date(Date.now() + 3600000),
         sameSite: "none",
         secure: true,
       });
-      console.log(newAccessToken);
-      reply.redirect(
-        "https://coral-optimal-commonly.ngrok-free.app/public/thankyou.html"
-      );
+      console.log(accessToken);
+      reply.redirect("https://coral-optimal-commonly.ngrok-free.app/success");
     }
   );
   app.get(
