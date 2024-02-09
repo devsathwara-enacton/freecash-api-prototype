@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <script>
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const password = passwordInput.value;
+
+            // Regular expression pattern to validate password
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+            if (!passwordPattern.test(password)) {
+                alert('Password must be at least 8 characters and include lowercase, uppercase, digit, and special character.');
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 
 <body>
@@ -56,7 +71,8 @@
                         </div>
 
                         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                            <form class="space-y-6" action="/api/v1/auth/register" method="POST">
+                            <form class="space-y-6" action="/api/v1/auth/register" method="POST"
+                                onsubmit="return validatePassword()">
                                 <div>
                                     <label for="name"
                                         class="block text-sm font-medium leading-6 text-black">Name</label>
@@ -89,7 +105,7 @@
                                 <div>
                                     <button type="submit"
                                         class="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Sign
-                                        in</button>
+                                        Up</button>
                                 </div>
                             </form>
 
