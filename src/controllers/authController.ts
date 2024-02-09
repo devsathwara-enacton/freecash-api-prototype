@@ -42,6 +42,7 @@ export const register = async (req: FastifyRequest, reply: FastifyReply) => {
         expires: new Date(Date.now() + 3600000),
         sameSite: "none",
         secure: true,
+        domain: ".enactweb.com",
       });
       return reply.view("login.ejs", {
         message: "Register Successful Please login!",
@@ -88,9 +89,10 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
         reply.setCookie("accessToken", newAccessToken.toString(), {
           path: "/",
           httpOnly: false,
-          expires: new Date(Date.now() + 86400000), // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+          expires: new Date(Date.now() + 86400000),
           sameSite: "none",
           secure: true,
+          domain: ".enactweb.com",
         });
         return reply.redirect("/success");
       }
@@ -189,7 +191,6 @@ export const changePassword = async (
   let accessToken = req.cookies.accessToken;
   let decoded = await decodeToken(reply, accessToken);
   let email = decoded.email;
-  console.log(email);
   const { currentPassword, password } = req.body as {
     currentPassword: string;
     password: string;

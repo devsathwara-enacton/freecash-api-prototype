@@ -104,9 +104,10 @@ const createApp = (): CustomFastifyInstance => {
         expires: new Date(Date.now() + 3600000),
         sameSite: "none",
         secure: true,
+        domain: ".enactweb.com",
       });
       console.log(accessToken);
-      reply.redirect("https://coral-optimal-commonly.ngrok-free.app/success");
+      reply.redirect("/success");
     }
   );
   app.get(
@@ -124,6 +125,7 @@ const createApp = (): CustomFastifyInstance => {
         expires: new Date(Date.now() + 3600000),
         sameSite: "none",
         secure: true,
+        domain: ".enactweb.com",
       });
       reply.redirect("/success");
     }

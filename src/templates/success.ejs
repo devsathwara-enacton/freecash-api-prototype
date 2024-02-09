@@ -9,7 +9,7 @@
 
 <body>
     <div class="center" style="display:flex; justify-content: center;  margin: 0;">
-        Thank you <%= accessToken %>
+        Thank you
     </div>
 </body>
 <script>
@@ -32,7 +32,7 @@
             try {
                 Hello.postMessage(`<%=accessToken%>`);
             } catch (error) {
-                window.location.href = "https://freecash.enactweb.com/"
+                // window.location.href = "https://freecash.enactweb.com/"
             }
         } else {
             console.log('No cookies set');
