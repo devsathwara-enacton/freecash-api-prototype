@@ -5,16 +5,6 @@ import { loginUserSchema, registerUserSchema } from "../schema/authSchema";
 import { isAuthenticated } from "../middleware/authMiddleware";
 
 export default async function (app: FastifyInstance) {
-  app.get("/login", (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.view("login.ejs", { message: null, warning: null });
-  });
-  app.get("/register", (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.view("register.ejs", { message: null, warning: null });
-  });
-
-  app.get("/forgot-password", (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.view("forgot.ejs", { message: null });
-  });
   app.get(
     "/google",
     {
@@ -69,10 +59,7 @@ export default async function (app: FastifyInstance) {
     },
     authController.verifyEmail
   );
-  app.get("/reset-password/", (req: FastifyRequest, reply: FastifyReply) => {
-    const { token } = req.query as { token: string };
-    return reply.view("resetPassword.ejs", { token: token });
-  });
+
   app.post(
     "/forgot-password",
     {
@@ -89,40 +76,40 @@ export default async function (app: FastifyInstance) {
   );
   app.post(
     "/reset-password/",
-    {
-      schema: {
-        body: {
-          password: {
-            type: "string",
-            minLength: 6,
-            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-          },
-        },
-      },
-    },
+    // {
+    //   schema: {
+    //     body: {
+    //       password: {
+    //         type: "string",
+    //         minLength: 6,
+    //         // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+    //         pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+    //       },
+    //     },
+    //   },
+    // },
     authController.resetPassword
   );
   app.post(
     "/change-password",
     {
       preHandler: isAuthenticated,
-      schema: {
-        body: {
-          currentpassword: {
-            type: "string",
-            minLength: 6,
-            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-          },
-          password: {
-            type: "string",
-            minLength: 6,
-            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-          },
-        },
-      },
+      // schema: {
+      //   body: {
+      //     currentpassword: {
+      //       type: "string",
+      //       minLength: 6,
+      //       // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+      //       pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+      //     },
+      //     password: {
+      //       type: "string",
+      //       minLength: 6,
+      //       // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+      //       pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+      //     },
+      //   },
+      // },
     },
     authController.changePassword
   );

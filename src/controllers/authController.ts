@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import { createJWTToken, decodeToken } from "../utils/jwt";
 import { sendEmail } from "../utils/sendEmail";
 import { config } from "../config/config";
+import { signInValidation } from "../utils/validation";
+import { z } from "zod";
 
 interface user {
   name: string;
@@ -11,92 +13,116 @@ interface user {
   password: string;
 }
 export const register = async (req: FastifyRequest, reply: FastifyReply) => {
-  const { name, email, password } = req.body as user;
-  let hashPassword: string = await bcrypt.hash(password, 10);
-  const userExist = await auth.login(email);
-  if (userExist) {
-    return reply.view("login.ejs", {
-      warning: "User already exists",
-      message: null,
-    });
-  } else {
-    console.log(config.env.app.email, email);
-    const register = await auth.register(name, email, hashPassword);
-    if (register) {
-      let accessToken = await createJWTToken(
-        { name: name, email: email },
-        `${parseInt(config.env.app.expiresIn)}h`
-      );
-      const info = await sendEmail(
-        config.env.app.email,
-        email,
-        "Email Verification Link",
-        `Hello👋,${name} 
-      Please verify your email by clicking this link`,
-        `${config.env.app.appUrl}/api/v1/auth/verify-email/?token=${accessToken}`
-      );
-      // req.session.set("accessToken", accessToken);
-      reply.setCookie("accessToken", accessToken.toString(), {
-        path: "/",
-        httpOnly: false,
-        expires: new Date(Date.now() + 3600000),
-        sameSite: "none",
-        secure: true,
-        domain: ".enactweb.com",
-      });
+  try {
+    const { name, email, password } = (await signInValidation.parse(
+      req.body
+    )) as user;
+    let hashPassword: string = await bcrypt.hash(password, 10);
+    const userExist = await auth.login(email);
+    if (userExist) {
       return reply.view("login.ejs", {
-        message: "Register Successful Please login!",
-        warning: null,
-      });
-    } else {
-      return reply.status(500).send({ error: "Internal Server Error" });
-    }
-  }
-};
-export const login = async (req: FastifyRequest, reply: FastifyReply) => {
-  const { email, password } = req.body as { email: string; password: string };
-  const userData = await auth.login(email);
-  if (!userData) {
-    return reply.view("login.ejs", {
-      warning: "Invalid Credentials",
-      message: null,
-    });
-  } else {
-    if (userData.password === null) {
-      return reply.view("login.ejs", {
-        warning: "Password is null",
-        message: null,
-      });
-    }
-    const isValidPassord = await bcrypt.compare(password, userData.password);
-    if (!isValidPassord) {
-      return reply.view("login.ejs", {
-        warning: "Invalid Password",
+        warning: "User already exists",
         message: null,
       });
     } else {
-      //Checking session
-      let checkSession = req.cookies.accessToken;
-      if (checkSession !== undefined) {
-        return reply.redirect("/success");
-      } else {
-        let newAccessToken = await createJWTToken(
-          { name: userData.name, email: userData.email },
+      console.log(config.env.app.email, email);
+      const register = await auth.register(name, email, hashPassword);
+      if (register) {
+        let accessToken = await createJWTToken(
+          { name: name, email: email },
           `${parseInt(config.env.app.expiresIn)}h`
         );
-        //Encrpted session
-        // req.session.set("accessToken", newAccessToken);
-        reply.setCookie("accessToken", newAccessToken.toString(), {
+        const info = await sendEmail(
+          config.env.app.email,
+          email,
+          "Email Verification Link",
+          `Hello👋,${name} 
+        Please verify your email by clicking this link`,
+          `${config.env.app.appUrl}/api/v1/auth/verify-email/?token=${accessToken}`
+        );
+        // req.session.set("accessToken", accessToken);
+        reply.setCookie("accessToken", accessToken.toString(), {
           path: "/",
           httpOnly: false,
-          expires: new Date(Date.now() + 86400000),
+          expires: new Date(Date.now() + 3600000),
           sameSite: "none",
           secure: true,
           domain: ".enactweb.com",
         });
         return reply.redirect("/success");
+      } else {
+        return reply.status(500).send({ error: "Internal Server Error" });
       }
     }
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      const errorMessage = error.errors.map((e: any) => e.message).join(", ");
+      // req.session.set("ZodError", errorMessage);
+      req.flash("ZodError", errorMessage);
+      return reply.redirect("/auth/register");
+    }
+    if (error.validation) {
+      // Render the login page with an error message
+      return reply.view("register.ejs", { error: error.validation });
+    }
+
+    reply.view("register.ejs", { message: null, warning: error });
+  }
+};
+export const login = async (req: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const { email, password } = req.body as { email: string; password: string };
+    const userData = await auth.login(email);
+    if (!userData) {
+      return reply.view("login.ejs", {
+        warning: "Invalid Credentials",
+        message: null,
+      });
+    } else {
+      if (userData.password === null) {
+        return reply.view("login.ejs", {
+          warning: "Password is null",
+          message: null,
+        });
+      }
+      const isValidPassord = await bcrypt.compare(password, userData.password);
+      if (!isValidPassord) {
+        return reply.view("login.ejs", {
+          warning: "Invalid Password",
+          message: null,
+        });
+      } else {
+        //Checking session
+        let checkSession = req.cookies.accessToken;
+        if (checkSession !== undefined) {
+          return reply.redirect("/success");
+        } else {
+          let newAccessToken = await createJWTToken(
+            { name: userData.name, email: userData.email },
+            `${parseInt(config.env.app.expiresIn)}h`
+          );
+          //Encrpted session
+          // req.session.set("accessToken", newAccessToken);
+          reply.setCookie("accessToken", newAccessToken.toString(), {
+            path: "/",
+            httpOnly: false,
+            expires: new Date(Date.now() + 86400000),
+            sameSite: "none",
+            secure: true,
+            domain: ".enactweb.com",
+          });
+          return reply.redirect("/success");
+        }
+      }
+    }
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      const errorMessage = error.errors.map((e: any) => e.message).join(", ");
+      // req.session.set("ZodError", errorMessage);
+      req.flash("ZodError", errorMessage);
+      return reply.redirect("/auth/login");
+    }
+    console.log("entered catch block in login route");
   }
 };
 
@@ -144,7 +170,7 @@ export const forgotPassword = async (
         { email: email },
         `${parseInt(config.env.app.expiresIn)}h`
       );
-      const resetLink = `${config.env.app.appUrl}/api/v1/auth/reset-password/?token=${resetToken}`;
+      const resetLink = `${config.env.app.appUrl}/auth/reset-password/?token=${resetToken}`;
       const info = await sendEmail(
         config.env.app.email,
         email,

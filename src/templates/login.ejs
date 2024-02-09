@@ -50,7 +50,7 @@
                             <img class="mx-auto h-10 w-auto"
                                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                                 alt="Your Company">
-                            <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Sign in
+                            <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-black">Sign in
                                 to your
                                 account
                             </h2>
@@ -72,7 +72,7 @@
                                         <label for="password"
                                             class="block text-sm font-medium leading-6 text-black">Password</label>
                                         <div class="text-sm">
-                                            <a href="/api/v1/auth/forgot-password"
+                                            <a href="/auth/forgot-password"
                                                 class="font-semibold text-indigo-400 hover:text-indigo-300">Forgot
                                                 password?</a>
                                         </div>
@@ -93,22 +93,20 @@
 
                             <p class="mt-10 text-center text-sm text-black-400">
                                 Don't have an account?
-                                <a href="/api/v1/auth/register"
+                                <a href="/auth/register"
                                     class="font-semibold leading-6 text-indigo-400 hover:text-indigo-300">Register</a>
                             </p>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-center h-screen dark:bg-gray-800">
-                        <form class="space-y-6" action="/api/v1/auth/google" method="get">
-                            <button
-                                class="px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
-                                <img class="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                    loading="lazy" alt="google logo">
-                                <span>Login with Google</span>
-                            </button>
-                        </form>
-                    </div>
+                    <form class="space-y-6 flex justify-center" action="/api/v1/auth/google" method="get">
+                        <button
+                            class=" bg-black px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
+                            <img class="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                loading="lazy" alt="google logo">
+                            <span>Login with Google</span>
+                        </button>
+                    </form>
 </body>
 
 </html>

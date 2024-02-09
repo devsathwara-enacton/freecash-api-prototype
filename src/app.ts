@@ -61,6 +61,7 @@ const createApp = (): CustomFastifyInstance => {
       // domain: ".enactweb.com",
     },
   });
+  // app.register(require("@fastify/flash"));
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.register(fastifySwagger, swaggerOptions);
@@ -144,7 +145,35 @@ const createApp = (): CustomFastifyInstance => {
       accessToken: accessToken,
     });
   });
-
+  app.get("/auth/login", (req: FastifyRequest, reply: FastifyReply) => {
+    const error = reply.flash("ZodError");
+    console.log(error);
+    if (error != null) {
+      return reply.view("login.ejs", { message: null, warning: error });
+    }
+    return reply.view("login.ejs", { message: null, warning: null });
+  });
+  app.get("/auth/register", (req: FastifyRequest, reply: FastifyReply) => {
+    const error = reply.flash("ZodError");
+    console.log(error);
+    if (error != null) {
+      return reply.view("register.ejs", { message: null, warning: error });
+    }
+    return reply.view("register.ejs", { message: null, warning: null });
+  });
+  app.get(
+    "/auth/reset-password/",
+    (req: FastifyRequest, reply: FastifyReply) => {
+      const { token } = req.query as { token: string };
+      return reply.view("resetPassword.ejs", { token: token });
+    }
+  );
+  app.get(
+    "/auth/forgot-password",
+    (req: FastifyRequest, reply: FastifyReply) => {
+      return reply.view("forgot.ejs", { message: null });
+    }
+  );
   return app;
 };
 
