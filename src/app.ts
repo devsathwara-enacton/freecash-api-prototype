@@ -135,7 +135,7 @@ const createApp = (): CustomFastifyInstance => {
   });
   app.get("/success", (req: FastifyRequest, reply: FastifyReply) => {
     // Render the "index.ejs" template
-    const accessToken = req.session.get("accessToken");
+    const accessToken = req.cookies.accessToken;
     console.log(accessToken);
     reply.view("success.ejs", {
       /* optional template context */

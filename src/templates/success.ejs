@@ -20,16 +20,22 @@
         // Get the value of the 'accessToken' parameter from the URL
         // const accesstoken = url.searchParams.get("accesstoken");
         // const accessToken = '<%= accessToken %>';
-        var cookies = document.cookie.split(';');
-        console.log(typeof cookies[1])
-        var token = cookies[1].split("=");
-        console.log(token);
-        console.log('sending msg to Hello Channel')
 
-        try {
-            Hello.postMessage(`TOKEN`);
-        } catch (error) {
-            // window.location.href = "https://composed-relative-skink.ngrok-free.app" 
+        // Check if cookies are set
+        if (document.cookie) {
+            // var cookies = document.cookie.split(';');
+            // console.log(typeof cookies[1])
+            // var token = cookies[1].split("=");
+            // console.log(token);
+            // console.log('sending msg to Hello Channel')
+
+            try {
+                Hello.postMessage(`<%=accessToken%>`);
+            } catch (error) {
+                window.location.href = "https://freecash.enactweb.com/"
+            }
+        } else {
+            console.log('No cookies set');
         }
     })
 </script>
