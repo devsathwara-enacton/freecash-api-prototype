@@ -7,6 +7,14 @@
     <title>Register</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <script>
+        function showToast(elementId, duration) {
+            var element = document.getElementById(elementId);
+            element.style.display = 'block';
+            setTimeout(function () {
+                element.style.display = 'none';
+            }, duration);
+        }
+
         function validatePassword() {
             const passwordInput = document.getElementById('password');
             const password = passwordInput.value;
@@ -46,33 +54,36 @@
       <body class="h-full">
       ```
     -->
-    <% if(message!=null){ %>
+
+    <% if(message!=null && message.length>0){ %>
         <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" id="message" role="alert">
             <p class="font-bold">
                 <%=message%>
             </p>
         </div>
+        <script>showToast('message', 5000);</script>
         <%}%>
-            <% if(warning!=null){ %>
+            <% if(warning!=null && warning.length>0){ %>
                 <div class="bg-red-100 border-t border-b border-blue-500 text-red-700 px-4 py-3" id="warning"
                     role="alert">
                     <p class="font-bold">
                         <%=warning%>
                     </p>
                 </div>
+                <script>showToast('warning', 5000);</script>
                 <%}%>
                     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
                         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                             <img class="mx-auto h-10 w-auto"
                                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                                 alt="Your Company">
-                            <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-black">Sign Up
+                            <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-black">
+                                Sign Up
                             </h2>
                         </div>
 
                         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                            <form class="space-y-6" action="/api/v1/auth/register" method="POST"
-                                onsubmit="return validatePassword()">
+                            <form class="space-y-6" action="/api/v1/auth/register" method="POST">
                                 <div>
                                     <label for="name"
                                         class="block text-sm font-medium leading-6 text-black">Name</label>

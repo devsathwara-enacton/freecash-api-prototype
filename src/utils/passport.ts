@@ -3,15 +3,14 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { auth } from "../models";
 import { FastifyRequest } from "fastify";
+import { config } from "../config/config";
 
 fastifyPassport.use(
   new GoogleStrategy(
     {
-      clientID:
-        "480901636612-j1p0rfq5lppofflh00fs607s6mrm8p7t.apps.googleusercontent.com",
-      clientSecret: "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",
-      callbackURL:
-        "https://coral-optimal-commonly.ngrok-free.app/auth/google/callback",
+      clientID: config.env.passport.googleClientID,
+      clientSecret: config.env.passport.googleClientSecret,
+      callbackURL: config.env.passport.googleCallbackUrl,
     },
     async (accessToken: any, refreshToken: any, profile: any, done: any) => {
       const email = profile.emails[0].value;
@@ -47,8 +46,6 @@ fastifyPassport.registerUserSerializer(async (user, req: FastifyRequest) => {
   const { id, displayName, username }: any = user;
 
   const userForSession = { id, displayName, username };
-  let newAccessToken = Math.floor(Math.random() * 10);
-  req.session.set("accessToken", newAccessToken);
   return userForSession;
 });
 

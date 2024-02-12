@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <script>
+        function showToast(elementId, duration) {
+            var element = document.getElementById(elementId);
+            element.style.display = 'block';
+            setTimeout(function () {
+                element.style.display = 'none';
+            }, duration);
+        }
+    </script>
 </head>
 
 <body>
@@ -31,19 +40,22 @@
       <body class="h-full">
       ```
     -->
-    <% if(message!=null){ %>
-        <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+    <% if(message!=null && message.length>0){ %>
+        <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" id="message" role="alert">
             <p class="font-bold">
                 <%=message%>
             </p>
         </div>
+        <script>showToast('message', 5000);</script>
         <%}%>
-            <% if(warning!=null){ %>
-                <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+            <% if(warning!=null && warning.length>0){ %>
+                <div class="bg-red-100 border-t border-b border-blue-500 text-red-700 px-4 py-3" id="warning"
+                    role="alert">
                     <p class="font-bold">
                         <%=warning%>
                     </p>
                 </div>
+                <script>showToast('warning', 5000);</script>
                 <%}%>
                     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
                         <div class="sm:mx-auto sm:w-full sm:max-w-sm">

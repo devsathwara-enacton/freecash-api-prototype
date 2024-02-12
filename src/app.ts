@@ -19,7 +19,6 @@ import view from "@fastify/view";
 import ejs from "ejs";
 import path from "path";
 import { createJWTToken } from "./utils/jwt";
-
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
   db: Kysely<DB>;
@@ -29,6 +28,7 @@ interface CustomFastifyInstance extends FastifyInstance {
 const createApp = (): CustomFastifyInstance => {
   const app = fastify({ logger: true }) as unknown as CustomFastifyInstance;
   app.decorate("db", db);
+
   const sessionSecret = config.env.app.sessionSecret?.toString();
   if (!sessionSecret) {
     throw new Error("Session secret is not defined in the config");
@@ -58,10 +58,10 @@ const createApp = (): CustomFastifyInstance => {
       expires: new Date(Date.now() + 3600000),
       sameSite: "none",
       secure: true,
-      // domain: ".enactweb.com",
+      domain: ".enactweb.com",
     },
   });
-  // app.register(require("@fastify/flash"));
+
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.register(fastifySwagger, swaggerOptions);
@@ -105,9 +105,8 @@ const createApp = (): CustomFastifyInstance => {
         expires: new Date(Date.now() + 3600000),
         sameSite: "none",
         secure: true,
-        domain: ".enactweb.com",
+        domain: " enactweb.com",
       });
-      console.log(accessToken);
       reply.redirect("/success");
     }
   );
@@ -128,6 +127,7 @@ const createApp = (): CustomFastifyInstance => {
         secure: true,
         domain: ".enactweb.com",
       });
+
       reply.redirect("/success");
     }
   );
@@ -156,7 +156,7 @@ const createApp = (): CustomFastifyInstance => {
   app.get("/auth/register", (req: FastifyRequest, reply: FastifyReply) => {
     const error = reply.flash("ZodError");
     console.log(error);
-    if (error != null) {
+    if (error) {
       return reply.view("register.ejs", { message: null, warning: error });
     }
     return reply.view("register.ejs", { message: null, warning: null });

@@ -17,15 +17,19 @@ export const register = async (req: FastifyRequest, reply: FastifyReply) => {
     const { name, email, password } = (await signInValidation.parse(
       req.body
     )) as user;
+    console.log(reply.flash("ZodError"));
     let hashPassword: string = await bcrypt.hash(password, 10);
     const userExist = await auth.login(email);
     if (userExist) {
+      console.log("entered register error");
+      // req.flash("ZodError", ["User Exist Please Login"]);
+      // console.log(reply.flash("ZodError"));
+      // // return reply.redirect("/auth/register");
       return reply.view("login.ejs", {
-        warning: "User already exists",
         message: null,
+        warning: "User Already Registered",
       });
     } else {
-      console.log(config.env.app.email, email);
       const register = await auth.register(name, email, hashPassword);
       if (register) {
         let accessToken = await createJWTToken(
@@ -40,12 +44,11 @@ export const register = async (req: FastifyRequest, reply: FastifyReply) => {
         Please verify your email by clicking this link`,
           `${config.env.app.appUrl}/api/v1/auth/verify-email/?token=${accessToken}`
         );
-        // req.session.set("accessToken", accessToken);
         reply.setCookie("accessToken", accessToken.toString(), {
           path: "/",
           httpOnly: false,
-          expires: new Date(Date.now() + 3600000),
-          sameSite: "none",
+          expires: new Date(Date.now() + 86400000),
+          sameSite: "lax",
           secure: true,
           domain: ".enactweb.com",
         });
@@ -58,15 +61,12 @@ export const register = async (req: FastifyRequest, reply: FastifyReply) => {
     if (error instanceof z.ZodError) {
       const errorMessage = error.errors.map((e: any) => e.message).join(", ");
       // req.session.set("ZodError", errorMessage);
-      req.flash("ZodError", errorMessage);
+      req.flash("ZodError", [`${errorMessage}`]);
       return reply.redirect("/auth/register");
     }
-    if (error.validation) {
-      // Render the login page with an error message
-      return reply.view("register.ejs", { error: error.validation });
-    }
 
-    reply.view("register.ejs", { message: null, warning: error });
+    // reply.view("register.ejs", { message: null, warning: error });
+    console.log(error);
   }
 };
 export const login = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -119,7 +119,7 @@ export const login = async (req: FastifyRequest, reply: FastifyReply) => {
     if (error instanceof z.ZodError) {
       const errorMessage = error.errors.map((e: any) => e.message).join(", ");
       // req.session.set("ZodError", errorMessage);
-      req.flash("ZodError", errorMessage);
+      req.flash("ZodError", [errorMessage]);
       return reply.redirect("/auth/login");
     }
     console.log("entered catch block in login route");
