@@ -30,5 +30,10 @@ export const config = {
       url: process.env.DATABASE_URL,
       host: process.env.DATABASE_HOST,
     },
+    passport: {
+      googleClientID: process.env.GOOGLE_CLIENTID || "",
+      googleClientSecret: process.env.GOOGLE_SECRET || "",
+      googleCallbackUrl: process.env.GOOGLE_CALLBACKURL,
+    },
   },
 };

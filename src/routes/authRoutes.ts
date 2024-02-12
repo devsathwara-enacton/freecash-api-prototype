@@ -42,9 +42,8 @@ export default async function (app: FastifyInstance) {
       reply.clearCookie("accessToken");
       req.session.delete();
       req.logout();
-      return reply.view("login.ejs", {
+      return reply.send({
         message: "Logout Successfull",
-        warning: null,
       });
     }
   );
@@ -76,40 +75,40 @@ export default async function (app: FastifyInstance) {
   );
   app.post(
     "/reset-password/",
-    // {
-    //   schema: {
-    //     body: {
-    //       password: {
-    //         type: "string",
-    //         minLength: 6,
-    //         // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-    //         pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-    //       },
-    //     },
-    //   },
-    // },
+    {
+      schema: {
+        body: {
+          password: {
+            type: "string",
+            minLength: 6,
+            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+          },
+        },
+      },
+    },
     authController.resetPassword
   );
   app.post(
     "/change-password",
     {
       preHandler: isAuthenticated,
-      // schema: {
-      //   body: {
-      //     currentpassword: {
-      //       type: "string",
-      //       minLength: 6,
-      //       // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-      //       pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-      //     },
-      //     password: {
-      //       type: "string",
-      //       minLength: 6,
-      //       // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-      //       pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-      //     },
-      //   },
-      // },
+      schema: {
+        body: {
+          currentpassword: {
+            type: "string",
+            minLength: 6,
+            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+          },
+          password: {
+            type: "string",
+            minLength: 6,
+            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+          },
+        },
+      },
     },
     authController.changePassword
   );

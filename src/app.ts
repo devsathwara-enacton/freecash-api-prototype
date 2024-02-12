@@ -15,9 +15,6 @@ import fastifyPassport from "@fastify/passport";
 import "./utils/passport";
 import cors from "@fastify/cors";
 import { config } from "./config/config";
-import view from "@fastify/view";
-import ejs from "ejs";
-import path from "path";
 import { createJWTToken } from "./utils/jwt";
 
 // Extend FastifyInstance to include the 'db' property
@@ -66,13 +63,6 @@ const createApp = (): CustomFastifyInstance => {
   app.register(fastifyPassport.secureSession());
   app.register(fastifySwagger, swaggerOptions);
   app.register(fastifySwaggerUi, swaggerUiOptions);
-  app.register(require("@fastify/formbody"));
-  app.register(view, {
-    engine: {
-      ejs,
-    },
-    templates: path.join(__dirname, "templates"),
-  });
 
   app.register(import("./routes/taskRoutes"), { prefix: "/api/v1/task" });
   app.register(import("./routes/authRoutes"), { prefix: "/api/v1/auth" });
@@ -107,8 +97,7 @@ const createApp = (): CustomFastifyInstance => {
         secure: true,
         domain: ".enactweb.com",
       });
-      console.log(accessToken);
-      reply.redirect("/success");
+      reply.send({ success: "true" });
     }
   );
   app.get(
@@ -128,50 +117,7 @@ const createApp = (): CustomFastifyInstance => {
         secure: true,
         domain: ".enactweb.com",
       });
-      reply.redirect("/success");
-    }
-  );
-
-  app.register(require("@fastify/static"), {
-    root: `${config.env.app.staticFile}/freecash-api/static`,
-    prefix: "/public/",
-  });
-  app.get("/success", (req: FastifyRequest, reply: FastifyReply) => {
-    // Render the "index.ejs" template
-    const accessToken = req.cookies.accessToken;
-    console.log(accessToken);
-    reply.view("success.ejs", {
-      /* optional template context */
-      accessToken: accessToken,
-    });
-  });
-  app.get("/auth/login", (req: FastifyRequest, reply: FastifyReply) => {
-    const error = reply.flash("ZodError");
-    console.log(error);
-    if (error != null) {
-      return reply.view("login.ejs", { message: null, warning: error });
-    }
-    return reply.view("login.ejs", { message: null, warning: null });
-  });
-  app.get("/auth/register", (req: FastifyRequest, reply: FastifyReply) => {
-    const error = reply.flash("ZodError");
-    console.log(error);
-    if (error != null) {
-      return reply.view("register.ejs", { message: null, warning: error });
-    }
-    return reply.view("register.ejs", { message: null, warning: null });
-  });
-  app.get(
-    "/auth/reset-password/",
-    (req: FastifyRequest, reply: FastifyReply) => {
-      const { token } = req.query as { token: string };
-      return reply.view("resetPassword.ejs", { token: token });
-    }
-  );
-  app.get(
-    "/auth/forgot-password",
-    (req: FastifyRequest, reply: FastifyReply) => {
-      return reply.view("forgot.ejs", { message: null });
+      reply.send({ success: "true" });
     }
   );
   return app;
