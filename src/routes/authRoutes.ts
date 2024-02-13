@@ -26,7 +26,7 @@ export default async function (app: FastifyInstance) {
       schema: { tags: ["Authentication"] },
     },
     async () => {
-      console.log("GOOGLE API forward");
+      console.log("facebook API forward");
     }
   );
   app.post(
@@ -95,12 +95,12 @@ export default async function (app: FastifyInstance) {
       preHandler: isAuthenticated,
       schema: {
         body: {
-          currentpassword: {
-            type: "string",
-            minLength: 6,
-            // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
-          },
+          // currentpassword: {
+          //   type: "string",
+          //   minLength: 6,
+          //   // Regular expression pattern for at least 1 uppercase letter, 1 lowercase letter, and 1 digit
+          //   pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$",
+          // },
           password: {
             type: "string",
             minLength: 6,
