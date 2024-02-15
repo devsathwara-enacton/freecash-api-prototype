@@ -16,6 +16,8 @@ import "./utils/passport";
 import cors from "@fastify/cors";
 import { config } from "./config/config";
 import axios from "axios";
+import { createJWTToken } from "./utils/jwt";
+
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
   db: Kysely<DB>;
@@ -148,9 +150,13 @@ const createApp = (): CustomFastifyInstance => {
 
       if (tokenResponse.ok) {
         const profile = await fetchUserProfile(tokenData.access_token);
-        // return access token
+        // Insert into db profile details
+        const token = createJWTToken(
+          { user: profile },
+          `${parseInt(config.env.app.expiresIn)}h`
+        );
         return res.send({
-          profile: profile,
+          token: token,
         });
       } else {
         // handle error
