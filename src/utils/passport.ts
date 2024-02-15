@@ -14,6 +14,7 @@ fastifyPassport.use(
     },
     async (accessToken: any, refreshToken: any, profile: any, done: any) => {
       const email = profile.emails[0].value;
+      console.log(accessToken);
       const googleId = profile.id;
       const name = profile.displayName;
       const userExist = await auth.login(email);

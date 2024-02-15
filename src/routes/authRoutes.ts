@@ -43,7 +43,7 @@ export default async function (app: FastifyInstance) {
       req.session.delete();
       req.logout();
       return reply.send({
-        message: "Logout Successfull",
+        message: "Logout Successful",
       });
     }
   );

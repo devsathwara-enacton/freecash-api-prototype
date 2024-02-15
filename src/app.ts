@@ -15,8 +15,7 @@ import fastifyPassport from "@fastify/passport";
 import "./utils/passport";
 import cors from "@fastify/cors";
 import { config } from "./config/config";
-import { createJWTToken } from "./utils/jwt";
-
+import axios from "axios";
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
   db: Kysely<DB>;
@@ -75,31 +74,99 @@ const createApp = (): CustomFastifyInstance => {
   app.register(import("./routes/categoriesRoutes"), {
     prefix: "/api/v1/offer-categories",
   });
-  app.get(
-    "/auth/google/callback",
-    {
-      preValidation: fastifyPassport.authenticate("google", {
-        scope: ["profile", "email"],
-        state: "sds3sddd",
-        failureRedirect: "/",
-      }),
-    },
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      let accessToken = await createJWTToken(
-        { user: req.user },
-        `${parseInt(config.env.app.expiresIn)}h`
-      );
-      reply.setCookie("accessToken", accessToken.toString(), {
-        path: "/",
-        httpOnly: false,
-        expires: new Date(Date.now() + 3600000),
-        sameSite: "none",
-        secure: true,
-        domain: ".enactweb.com",
+  // app.get(
+  //   "/auth/google/callback",
+  //   {
+  //     preValidation: fastifyPassport.authenticate("google", {
+  //       scope: ["profile", "email"],
+  //       state: "sds3sddd",
+  //       failureRedirect: "/",
+  //     }),
+  //   },
+  //   async (req: FastifyRequest, reply: FastifyReply) => {
+  //     const { code } = req.query as { code: string };
+  //     console.log(req.query);
+  //     const url = "https://oauth2.googleapis.com/token";
+  //     const grantType = "authorization_code";
+  //     const params = new URLSearchParams();
+  //     params.append("client_id", config.env.passport.googleClientID);
+  //     params.append("client_secret", config.env.passport.googleClientSecret);
+  //     params.append("code", code);
+  //     params.append("grant_type", grantType);
+  //     params.append(
+  //       "redirect_uri",
+  //       config.env.passport.googleCallbackUrl ?? ""
+  //     );
+
+  //     fetch(url, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //       body: params,
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data) => console.log(data))
+  //       .catch((error) => console.error("Error:", error));
+  //     let accessToken = await createJWTToken(
+  //       { user: req.user },
+  //       `${parseInt(config.env.app.expiresIn)}h`
+  //     );
+  //     reply.setCookie("accessToken", accessToken.toString(), {
+  //       path: "/",
+  //       httpOnly: false,
+  //       expires: new Date(Date.now() + 3600000),
+  //       sameSite: "none",
+  //       secure: true,
+  //       domain: ".enactweb.com",
+  //     });
+  //     reply.send({ success: "true" });
+  //   }
+  // );
+  app.get("/auth/google/callback", async (req, res) => {
+    try {
+      const { code } = req.query as { code: string };
+
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          code: code,
+          client_id: config.env.passport.googleClientID,
+          client_secret: config.env.passport.googleClientSecret,
+          redirect_uri: config.env.passport.googleCallbackUrl ?? "",
+          grant_type: "authorization_code",
+        }),
       });
-      reply.send({ success: "true" });
+
+      const tokenData = await tokenResponse.json();
+
+      // log full token response
+      console.log(tokenData);
+
+      if (tokenResponse.ok) {
+        const profile = await fetchUserProfile(tokenData.access_token);
+        // return access token
+        return res.send({
+          profile: profile,
+        });
+      } else {
+        // handle error
+        return res.status(500).send({
+          error: tokenData.error,
+        });
+      }
+    } catch (err) {
+      // log any errors
+      console.error(err);
+      return res.status(500).send({
+        error: "Error exchanging code for access token",
+      });
     }
-  );
+  });
+
   app.get(
     "/auth/facebook/callback",
     {
@@ -122,7 +189,25 @@ const createApp = (): CustomFastifyInstance => {
   );
   return app;
 };
+async function fetchUserProfile(accessToken: any) {
+  try {
+    // Make a GET request to the Google People API's user info endpoint
+    const response = await axios.get(
+      "https://www.googleapis.com/userinfo/v2/me",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Include the access token in the Authorization header
+        },
+      }
+    ); // Extract relevant user information from the response
 
+    const profile = response.data; // console.log(profile);
+    return profile;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
+}
 // Create app instance using the helper function
 const app: CustomFastifyInstance = createApp();
 export default app;

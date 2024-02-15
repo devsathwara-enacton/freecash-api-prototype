@@ -4,7 +4,6 @@ import app from "../app";
 export const fetch = async (req: FastifyRequest, reply: FastifyReply) => {
   const result = await categories.fetch();
   if (result) {
-    console.log(result);
     return reply.status(200).send({
       success: true,
       data: {
