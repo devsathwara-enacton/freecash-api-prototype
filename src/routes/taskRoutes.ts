@@ -3,9 +3,5 @@ import { taskController } from "../controllers";
 import { isAuthenticated } from "../middleware/authMiddleware";
 import { fetchTaskSchema } from "../schema/taskSchemas";
 export default async function (app: FastifyInstance) {
-  app.get(
-    "/",
-    { schema: fetchTaskSchema, preHandler: isAuthenticated },
-    taskController.fetch
-  );
+  app.get("/", { schema: fetchTaskSchema }, taskController.fetch);
 }

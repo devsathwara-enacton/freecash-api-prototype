@@ -16,7 +16,7 @@ import "./utils/passport";
 import cors from "@fastify/cors";
 import { config } from "./config/config";
 import axios from "axios";
-import { createJWTToken } from "./utils/jwt";
+import { createJWTToken, decodeToken, validateJWTToken } from "./utils/jwt";
 
 // Extend FastifyInstance to include the 'db' property
 interface CustomFastifyInstance extends FastifyInstance {
@@ -125,53 +125,62 @@ const createApp = (): CustomFastifyInstance => {
   //     reply.send({ success: "true" });
   //   }
   // );
-  app.get("/auth/google/callback", async (req, res) => {
-    try {
-      const { code } = req.query as { code: string };
+  app.get(
+    "/auth/google/callback",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const { code } = req.query as { code: string };
 
-      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          code: code,
-          client_id: config.env.passport.googleClientID,
-          client_secret: config.env.passport.googleClientSecret,
-          redirect_uri: config.env.passport.googleCallbackUrl ?? "",
-          grant_type: "authorization_code",
-        }),
-      });
-
-      const tokenData = await tokenResponse.json();
-
-      // log full token response
-      console.log(tokenData);
-
-      if (tokenResponse.ok) {
-        const profile = await fetchUserProfile(tokenData.access_token);
-        // Insert into db profile details
-        const token = createJWTToken(
-          { user: profile },
-          `${parseInt(config.env.app.expiresIn)}h`
+        const tokenResponse = await fetch(
+          "https://oauth2.googleapis.com/token",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              code: code,
+              client_id: config.env.passport.googleClientID,
+              client_secret: config.env.passport.googleClientSecret,
+              redirect_uri: config.env.passport.googleCallbackUrl ?? "",
+              grant_type: "authorization_code",
+            }),
+          }
         );
-        return res.send({
-          token: token,
-        });
-      } else {
-        // handle error
-        return res.status(500).send({
-          error: tokenData.error,
+
+        const tokenData = await tokenResponse.json();
+
+        // log full token response
+        console.log(tokenData);
+
+        if (tokenResponse.ok) {
+          const profile = await fetchUserProfile(tokenData.access_token);
+          // Insert into db profile details
+          const token = createJWTToken(
+            { user: profile },
+            `${parseInt(config.env.app.expiresIn)}h`
+          );
+          console.log(profile.id_token);
+          const userDetails = validateJWTToken(profile.id_token);
+          console.log(userDetails);
+          return reply.send({
+            token: token,
+          });
+        } else {
+          // handle error
+          return reply.status(500).send({
+            error: tokenData.error,
+          });
+        }
+      } catch (err) {
+        // log any errors
+        console.error(err);
+        return reply.status(500).send({
+          error: "Error exchanging code for access token",
         });
       }
-    } catch (err) {
-      // log any errors
-      console.error(err);
-      return res.status(500).send({
-        error: "Error exchanging code for access token",
-      });
     }
-  });
+  );
 
   app.get(
     "/auth/facebook/callback",

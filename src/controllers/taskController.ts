@@ -19,6 +19,7 @@ export const fetch = async (req: FastifyRequest, reply: FastifyReply) => {
     network: string;
     category: number;
   };
+
   console.log(
     countries,
     page_number,
@@ -28,8 +29,10 @@ export const fetch = async (req: FastifyRequest, reply: FastifyReply) => {
     network,
     category
   );
+
   const ArrPlat: string[] | null = platform ? platform.split(",") : null;
   const ArrCountry: string[] | null = countries ? countries.split(",") : null;
+
   const result = await task.fetch(
     typeof ArrCountry != undefined || ArrCountry ? ArrCountry : null,
     page_number || null,
@@ -45,43 +48,46 @@ export const fetch = async (req: FastifyRequest, reply: FastifyReply) => {
       error: "Not Found",
     });
   } else {
+    // Added type assertion to result to allow .map()
+    const tasks = result.map((task: any) => ({
+      name: task.Name ? JSON.parse(task.Name)?.en || null : null,
+      description: task.description
+        ? JSON.parse(task.description)?.en || null
+        : null,
+      instructions: task.instructions
+        ? JSON.parse(task.instructions)?.en || null
+        : null,
+      id: task.ID,
+      network: task.network,
+      offer_id: task.offer_id,
+      category_id: task.category_id,
+      image: task.image,
+      url: task.url,
+      payout: task.payout,
+      countries: task.countries ? JSON.parse(task.countries) : null,
+      platforms: task.platforms ? JSON.parse(task.platforms) : null,
+      status: task.status,
+      is_featured: task.is_featured,
+      goals_count: task.goals_count,
+      goals: task.network_goals ? JSON.parse(task.network_goals) : null,
+      provider: {
+        code: task.code,
+        name: task.network,
+        icon: task.icon,
+      },
+      category: {
+        name: task.name,
+        id: task.category_id,
+        icon: task.icon || null,
+        bg_color: task.bg_color,
+        sort_order: task.sort_order,
+      },
+    }));
+
     return reply.send({
       success: 1,
       data: {
-        tasks: result.rows.map((task: any) => ({
-          name: task.Name ? JSON.parse(task.Name)?.en || null : null,
-          description: task.description
-            ? JSON.parse(task.description)?.en || null
-            : null,
-          instructions: task.instructions
-            ? JSON.parse(task.instructions)?.en || null
-            : null,
-          id: task.ID,
-          network: task.network,
-          offer_id: task.offer_id,
-          category_id: task.category_id,
-          image: task.image,
-          url: task.url,
-          payout: task.payout,
-          countries: task.countries ? JSON.parse(task.countries) : null,
-          platforms: task.platforms ? JSON.parse(task.platforms) : null,
-          status: task.status,
-          is_featured: task.is_featured,
-          goals_count: task.goals_count,
-          goals: task.network_goals ? JSON.parse(task.network_goals) : null,
-          provider: {
-            code: task.code,
-            name: task.network,
-            icon: task.icon,
-          },
-          category: {
-            name: task.name,
-            id: task.category_id,
-            icon: task.icon || null,
-            bg_color: task.bg_color,
-            sort_order: task.sort_order,
-          },
-        })),
+        tasks: tasks,
       },
       error: 0,
       msg: null,
